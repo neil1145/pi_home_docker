@@ -1,0 +1,30 @@
+---
+version: 2
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      - 53:53/tcp #DNS Port
+      - 53:53/udp #DNS Port
+      - 67:67/udp #DHCP Port
+      - 83:80/tcp #Dashboard Port
+      - 443:443/tcp #Port 443 is to provide a sinkhole for ads that use SSL.
+    environment:
+      TZ: Asia/Kolkata
+      WEBPASSWORD: piuser1145
+      DNS1: 208.67.222.222
+      DNS2: 208.67.220.220
+      DNSSEC: 'true'
+    volumes:
+      - /srv/dev-disk-by-label-NAS/config/Pihole/etc-pihole/:/etc/pihole/
+      - /srv/dev-disk-by-label-NAS/config/Pihole/etc-dnsmasq.d/:/etc/dnsmasq.d/
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+    networks: 
+      macnet:
+        ipv4_address: 192.168.0.4
+networks:
+  macnet:
+    external: true    
