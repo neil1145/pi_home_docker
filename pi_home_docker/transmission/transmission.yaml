@@ -1,0 +1,28 @@
+---
+version: "2.1"
+services:
+  transmission:
+    image: ghcr.io/linuxserver/transmission
+    container_name: transmission
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Kolkata
+      - TRANSMISSION_WEB_HOME=/combustion-release/ #optional
+      - USER=piuser #optional
+      - PASS=piuser #optional
+    volumes:
+      - /home/pi/pi_home_docker/transmission/config:/config
+      - /home/pi/pi_home_docker/transmission/downloads:/downloads
+      - /home/pi/pi_home_docker/transmission/transmission/watch:/watch
+    ports:
+      - 9091:9091
+      - 51413:51413
+      - 51413:51413/udp
+    restart: unless-stopped
+    networks: 
+      macnet:
+        ipv4_address: 192.168.0.2
+networks:
+  macnet:
+    external: true

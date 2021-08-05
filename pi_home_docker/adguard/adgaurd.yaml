@@ -1,0 +1,59 @@
+---
+version: "2.1"
+
+services:
+  adguard:
+    container_name: adguard
+    image: adguard/adguardhome
+    ports:
+      - 53/tcp
+      - 53/udp
+      - 80/tcp
+      - 3000/tcp
+      - 67/udp
+      - 68/tcp
+      - 68/udp
+      - 443/tcp
+      - 853/tcp
+    volumes:
+      - adguard_work:/opt/adguardhome/work
+      - adguard_conf:/opt/adguardhome/conf
+    networks:
+      macvlan:
+        ipv4_address: 10.10.0.192 # this IP will show as a device on your router
+      vlan_bridge:
+        ipv4_address: 10.10.10.192 # Pick same last numbers as macvlan and use "vlan bridge subnet" (10)
+    restart: unless-stopped
+
+# Here we define what networks are available to use by the services above
+# Make sure to set the config of both macvlan and vlan_bridge as described in the guide.
+networks:
+  macvlan:
+    name: docker_macvlan
+    driver: macvlan
+    enable_ipv6: false
+    driver_opts:
+      parent: eth0
+    ipam:
+      config:
+        - subnet: 10.10.0.0/24 # Set to same subnet as your router and other devices
+          ip_range: 10.10.0.192/27 # Available range from 192 to 224.
+          gateway: 10.10.0.1 # This is your router IP
+
+  vlan_bridge:
+    name: docker_vlan_bridge
+    driver: bridge
+    enable_ipv6: false
+    ipam:
+      config:
+        - subnet: 10.10.10.193/24 # subnet for all containers 
+          ip_range: 10.10.10.192/24 # for easier use, set to same range as under macvlan (192 to 224 here)
+          gateway: 10.10.10.1 # for easier use, set to same last number as your router
+
+# Here we define where to save the files that live outside the container
+# Located under /var/lib/docker/volumes
+volumes:
+  adguard_work:
+    name: adguard_work
+  adguard_conf:
+    name: adguard_conf
