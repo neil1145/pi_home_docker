@@ -1,0 +1,17 @@
+version: '3.9'
+
+networks:
+  pi:
+    external: true
+
+
+services:
+  cloudflaretunnel:
+    container_name: cf-tunnel
+    image: neil1145/cloudflared:latest
+    restart: unless-stopped
+    environment:
+      - TUNNEL_TOKEN=$TUNNEL_TOKEN
+    command: tunnel --no-autoupdate run
+    networks:
+      - pi
