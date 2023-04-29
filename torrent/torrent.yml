@@ -1,0 +1,28 @@
+version: "2.1"
+services:
+  torrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: torrent
+    network_mode: host    
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Kolkata
+      - UMASK=022
+      - WEBUI_PORT=8383
+    volumes:
+      - ./config:/config
+      - ./downloads:/downloads
+      - ./transcode:/transcode      
+    ports:
+      - 6881:6881
+      - 6881:6881/udp
+      - 8383:8383
+    restart: unless-stopped
+    networks:
+      - pi    
+
+
+networks:
+  pi:
+    external: true
